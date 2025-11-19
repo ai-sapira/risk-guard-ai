@@ -39,7 +39,7 @@ const Landing: React.FC = () => {
               <img 
                 src={telefonicaLogo} 
                 alt="Telefónica" 
-                className="h-12 w-auto object-contain"
+                className="h-12 w-auto object-contain rounded-lg"
               />
            </div>
            <h1 className="text-lg font-semibold text-slate-900">Welcome back</h1>
