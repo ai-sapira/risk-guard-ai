@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, ShieldCheck, User, ArrowRight, Command } from 'lucide-react';
+import telefonicaLogo from '../telefonica-logo-horizontal-negativo-1250.webp';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
@@ -34,17 +35,12 @@ const Landing: React.FC = () => {
       
       <div className="w-full max-w-[400px] animate-enter">
         <div className="text-center mb-8">
-           <div className="w-16 h-16 bg-[#00A9E0] rounded-lg mx-auto flex items-center justify-center shadow-sm mb-4">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Telefónica symbol - 5 circles forming a T shape */}
-                <circle cx="24" cy="12" r="4" fill="white"/>
-                <circle cx="18" cy="20" r="4" fill="white"/>
-                <circle cx="24" cy="20" r="4" fill="white"/>
-                <circle cx="30" cy="20" r="4" fill="white"/>
-                <circle cx="24" cy="28" r="4" fill="white"/>
-                {/* Telefónica text */}
-                <text x="24" y="40" fontSize="8" fill="white" fontFamily="Arial, sans-serif" fontWeight="500" textAnchor="middle" letterSpacing="0.5px">telefónica</text>
-              </svg>
+           <div className="mx-auto flex items-center justify-center mb-4">
+              <img 
+                src={telefonicaLogo} 
+                alt="Telefónica" 
+                className="h-12 w-auto object-contain"
+              />
            </div>
            <h1 className="text-lg font-semibold text-slate-900">Welcome back</h1>
            <p className="text-[13px] text-slate-500 mt-1">Select a workspace to continue</p>
