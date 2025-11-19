@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RiskGuard AI Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              gray: {
+                50: '#F9FAFB',
+                100: '#F3F4F6',
+                200: '#E5E7EB',
+                300: '#D1D5DB',
+                400: '#9CA3AF',
+                500: '#6B7280',
+                600: '#4B5563',
+                700: '#374151',
+                800: '#1F2937',
+                900: '#111827',
+              }
+            },
+            animation: {
+              'enter': 'enter 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'fade-in': 'fadeIn 0.3s ease-out forwards',
+              'slide-up': 'slideUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'slide-in-right': 'slideInRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'page-enter': 'pageEnter 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+            },
+            keyframes: {
+              enter: {
+                '0%': { opacity: '0', transform: 'scale(0.98) translateY(2px)' },
+                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideInRight: {
+                '0%': { transform: 'translateX(100%)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
+              pageEnter: {
+                '0%': { opacity: '0', transform: 'translateY(8px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            },
+            boxShadow: {
+              'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+              'card': '0 0 0 1px rgba(226, 232, 240, 1), 0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+              'modal': '0 0 0 1px rgba(0,0,0,0.05), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { 
+        font-family: 'Inter', sans-serif; 
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        background-color: #ffffff;
+        color: #111827;
+      }
+      
+      /* Technical Dot Pattern Background (Attio Style) */
+      .bg-dot-pattern {
+        background-color: #ffffff;
+        background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+        background-size: 20px 20px;
+      }
+
+      /* Premium Scrollbar (Minimalist) */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+      /* Focus Rings (Sharp) */
+      :focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 1px;
+      }
+      
+      .animate-stagger-1 { animation-delay: 50ms; }
+      .animate-stagger-2 { animation-delay: 100ms; }
+      .animate-stagger-3 { animation-delay: 150ms; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="antialiased bg-white">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
