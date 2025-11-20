@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Shield, 
   CheckCircle2, 
@@ -14,12 +14,17 @@ import {
 
 const CompanyInviteLanding: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
       fullName: '',
       password: '',
       terms: false
   });
+  
+  // Get email and company name from URL query parameters
+  const inviteEmail = searchParams.get('email') || 'admin@acme.com';
+  const companyName = searchParams.get('company') || 'Acme Corp Ltd.';
 
   const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
@@ -45,7 +50,7 @@ const CompanyInviteLanding: React.FC = () => {
                     </div>
                </div>
                <div className="flex flex-col">
-                   <span className="font-bold text-sm text-slate-900 leading-none">RiskGuard HQ</span>
+                   <span className="font-bold text-sm text-slate-900 leading-none">RiskGuard</span>
                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mt-0.5">Powered by Telefónica</span>
                </div>
           </div>
@@ -65,7 +70,7 @@ const CompanyInviteLanding: React.FC = () => {
                           <span className="text-blue-600">Cyber Defense</span> Policy
                       </h1>
                       <p className="text-slate-500 text-sm leading-relaxed">
-                          As part of your insurance coverage with <strong>Telefónica Tech</strong>, you have access to RiskGuard HQ.
+                          As part of your insurance coverage with <strong>Telefónica</strong>, you have access to RiskGuard.
                           This platform helps reduce premiums by actively training employees and detecting threats.
                       </p>
                   </div>
@@ -98,7 +103,7 @@ const CompanyInviteLanding: React.FC = () => {
                   
                   <div className="mb-8">
                       <h2 className="text-xl font-bold text-slate-900">Complete Account Setup</h2>
-                      <p className="text-sm text-slate-500 mt-1">For: <span className="font-medium text-slate-700">Acme Corp Ltd.</span></p>
+                      <p className="text-sm text-slate-500 mt-1">For: <span className="font-medium text-slate-700">{companyName}</span></p>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
@@ -123,7 +128,7 @@ const CompanyInviteLanding: React.FC = () => {
                               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                               <input 
                                   type="email" 
-                                  value="admin@acme.com"
+                                  value={inviteEmail}
                                   disabled
                                   className="w-full h-10 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-md text-[13px] font-medium text-slate-500 cursor-not-allowed"
                               />

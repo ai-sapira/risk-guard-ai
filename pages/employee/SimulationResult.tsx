@@ -104,38 +104,72 @@ const SimulationResult: React.FC = () => {
               <div className="p-8 relative flex-1">
                  {/* Email Mock */}
                  <div className="space-y-4 opacity-90">
-                    <div className="border-b border-slate-100 pb-4 space-y-1">
-                        <p className="text-sm"><span className="text-slate-400 w-16 inline-block">From:</span> <span className="font-medium text-slate-900">{simulation.sender}</span></p>
-                        <p className="text-sm"><span className="text-slate-400 w-16 inline-block">Subject:</span> <span className="font-medium text-slate-900">{simulation.subject}</span></p>
+                    <div className="border-b border-slate-100 pb-4 space-y-1 relative">
+                        <p className="text-sm relative">
+                           <span className="text-slate-400 w-16 inline-block">From:</span> 
+                           <span className="font-medium text-slate-900 relative inline-block">
+                              {simulation.sender}
+                              {showHotspots && (
+                                 <div className="absolute -top-1 -right-6 w-5 h-5 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center cursor-help animate-pulse group">
+                                    <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-xs p-3 rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                       <p className="font-bold text-rose-300 mb-1">{simulation.redFlags[0].label}</p>
+                                       <p className="leading-snug">{simulation.redFlags[0].desc}</p>
+                                    </div>
+                                 </div>
+                              )}
+                           </span>
+                        </p>
+                        <p className="text-sm relative">
+                           <span className="text-slate-400 w-16 inline-block">Subject:</span> 
+                           <span className="font-medium text-slate-900 relative inline-block">
+                              Invoice #INV-2023-991{' '}
+                              <span className="relative inline-block">
+                                 OVERDUE
+                                 {showHotspots && (
+                                    <div className="absolute -top-1 -right-6 w-5 h-5 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center cursor-help animate-pulse group">
+                                       <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
+                                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-xs p-3 rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                          <p className="font-bold text-rose-300 mb-1">{simulation.redFlags[1].label}</p>
+                                          <p className="leading-snug">{simulation.redFlags[1].desc}</p>
+                                       </div>
+                                    </div>
+                                 )}
+                              </span>
+                           </span>
+                        </p>
                     </div>
                     <div className="font-serif text-slate-700 space-y-4 text-sm leading-relaxed">
-                        <p>Dear Customer,</p>
+                        <p className="relative inline-block">
+                           Dear Customer,
+                           {showHotspots && (
+                              <div className="absolute -top-1 -right-6 w-5 h-5 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center cursor-help animate-pulse group">
+                                 <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
+                                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-xs p-3 rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <p className="font-bold text-rose-300 mb-1">{simulation.redFlags[2].label}</p>
+                                    <p className="leading-snug">{simulation.redFlags[2].desc}</p>
+                                 </div>
+                              </div>
+                           )}
+                        </p>
                         <p>We have not received payment for the attached invoice. Service will be suspended in 24 hours.</p>
-                        <div className="py-2">
-                           <button className="bg-blue-600 text-white px-6 py-2 rounded font-sans text-sm font-medium pointer-events-none">
+                        <div className="py-2 relative inline-block">
+                           <button className="bg-blue-600 text-white px-6 py-2 rounded font-sans text-sm font-medium pointer-events-none relative">
                               View Invoice
+                              {showHotspots && (
+                                 <div className="absolute -top-1 -right-6 w-5 h-5 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center cursor-help animate-pulse group">
+                                    <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-xs p-3 rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                       <p className="font-bold text-rose-300 mb-1">{simulation.redFlags[3].label}</p>
+                                       <p className="leading-snug">{simulation.redFlags[3].desc}</p>
+                                    </div>
+                                 </div>
+                              )}
                            </button>
                         </div>
                         <p className="text-slate-400 text-xs">Billing Dept.</p>
                     </div>
                  </div>
-
-                 {/* Hotspots Overlay */}
-                 {showHotspots && simulation.redFlags.map(flag => (
-                    <div 
-                        key={flag.id}
-                        className="absolute w-6 h-6 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center cursor-help animate-pulse"
-                        style={{ top: `${flag.y}%`, left: `${flag.x}%` }}
-                    >
-                        <div className="relative group">
-                            <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-slate-900 text-white text-xs p-3 rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                <p className="font-bold text-rose-300 mb-1">{flag.label}</p>
-                                <p className="leading-snug">{flag.desc}</p>
-                            </div>
-                        </div>
-                    </div>
-                 ))}
               </div>
            </div>
 

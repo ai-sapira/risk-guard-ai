@@ -46,21 +46,50 @@ import { Select } from '../../components/ui/Select';
 const generateTrendData = (range: string) => {
   const months = range === '3M' ? 3 : range === '6M' ? 6 : 12;
   const data = [];
-  let baseScore = 68;
+  
+  // Different starting points and growth patterns based on range
+  let baseScore: number;
+  let growthRate: number;
+  let volatility: number;
+  
+  if (range === '3M') {
+    // Short term: more volatility, recent growth
+    baseScore = 65;
+    growthRate = 0.8; // Strong upward trend
+    volatility = 2.5;
+  } else if (range === '6M') {
+    // Medium term: moderate growth with some fluctuations
+    baseScore = 62;
+    growthRate = 0.5; // Steady growth
+    volatility = 2.0;
+  } else {
+    // Long term: gradual improvement over time
+    baseScore = 58;
+    growthRate = 0.3; // Gradual upward trend
+    volatility = 1.8;
+  }
   
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const startMonth = new Date().getMonth();
 
   for (let i = 0; i < months; i++) {
     const monthIndex = (startMonth - (months - 1) + i + 12) % 12;
-    // Smoother random walk
-    const change = (Math.random() - 0.45) * 2.5; 
-    baseScore = Math.min(95, Math.max(50, baseScore + change));
+    
+    // Apply growth trend + volatility
+    const trendComponent = i * growthRate;
+    const randomComponent = (Math.random() - 0.5) * volatility;
+    const seasonalComponent = Math.sin((i / months) * Math.PI * 2) * 1.5; // Subtle seasonal pattern
+    
+    baseScore = baseScore + trendComponent + randomComponent + seasonalComponent;
+    baseScore = Math.min(95, Math.max(50, baseScore));
+    
+    // Benchmark follows a slower, more stable growth
+    const benchmarkScore = 60 + (i * 0.15) + (Math.random() - 0.5) * 0.5;
     
     data.push({
       month: monthNames[monthIndex],
       score: Number(baseScore.toFixed(1)),
-      benchmark: 65 + (i * 0.1), // Stable market baseline
+      benchmark: Number(Math.min(75, Math.max(55, benchmarkScore)).toFixed(1)),
       event: i === months - 2 ? "Policy Update" : null
     });
   }
@@ -81,7 +110,7 @@ const sectorRiskData = [
   { name: 'Manuf.', score: 48, exposure: 'High' },
 ];
 
-// Real Spanish Companies Mock
+// Real Spanish Companies Mock (matching Clients.tsx)
 const spanishCompanies: Company[] = [
   { id: '1', name: 'Cabify', sector: 'Mobility', riskScore: 92, employees: 1200, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/cabify.com' },
   { id: '2', name: 'Factorial', sector: 'HR Tech', riskScore: 88, employees: 850, status: 'Active', trend: 'stable', logo: 'https://logo.clearbit.com/factorialhr.com' },
@@ -90,7 +119,14 @@ const spanishCompanies: Company[] = [
   { id: '5', name: 'TravelPerk', sector: 'Travel SaaS', riskScore: 81, employees: 1100, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/travelperk.com' },
   { id: '6', name: 'Filmin', sector: 'Media', riskScore: 55, employees: 120, status: 'Active', trend: 'down', logo: 'https://logo.clearbit.com/filmin.es' },
   { id: '7', name: 'Idealista', sector: 'Real Estate', riskScore: 78, employees: 800, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/idealista.com' },
-  { id: '8', name: 'Heura', sector: 'Food Tech', riskScore: 62, employees: 150, status: 'Onboarding', trend: 'stable', logo: 'https://logo.clearbit.com/heurafoods.com' },
+  { id: '8', name: 'Heura Foods', sector: 'Food Tech', riskScore: 62, employees: 150, status: 'Onboarding', trend: 'stable', logo: 'https://logo.clearbit.com/heurafoods.com' },
+  { id: '9', name: 'Red Points', sector: 'Legal Tech', riskScore: 95, employees: 300, status: 'Active', trend: 'stable', logo: 'https://logo.clearbit.com/redpoints.com' },
+  { id: '10', name: 'Paack', sector: 'Logistics', riskScore: 45, employees: 600, status: 'Active', trend: 'down', logo: 'https://logo.clearbit.com/paack.co' },
+  { id: '11', name: 'Tradeinn', sector: 'E-commerce', riskScore: 72, employees: 500, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/tradeinn.com' },
+  { id: '12', name: 'Clikalia', sector: 'PropTech', riskScore: 85, employees: 450, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/clikalia.com' },
+  { id: '13', name: 'Typeform', sector: 'SaaS', riskScore: 89, employees: 400, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/typeform.com' },
+  { id: '14', name: 'Wallbox', sector: 'Energy Tech', riskScore: 76, employees: 900, status: 'Active', trend: 'up', logo: 'https://logo.clearbit.com/wallbox.com' },
+  { id: '15', name: 'Freepik', sector: 'Media', riskScore: 82, employees: 600, status: 'Active', trend: 'stable', logo: 'https://logo.clearbit.com/freepik.com' },
 ];
 
 const insights = [
@@ -103,18 +139,32 @@ const insights = [
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    const portfolioValue = payload.find((p: any) => p.name === 'Portfolio Avg')?.value;
+    const benchmarkValue = payload.find((p: any) => p.name === 'Market Benchmark')?.value;
+    const difference = portfolioValue && benchmarkValue ? (portfolioValue - benchmarkValue).toFixed(1) : null;
+    
     return (
-      <div className="bg-white/95 backdrop-blur border border-slate-200 p-3 rounded-lg shadow-xl text-[12px]">
-        <p className="font-bold text-slate-900 mb-2">{label}</p>
+      <div className="bg-white/95 backdrop-blur border border-slate-200 p-3 rounded-lg shadow-xl text-[12px] min-w-[160px]">
+        <p className="font-bold text-slate-900 mb-3 text-[13px]">{label}</p>
         {payload.map((entry: any) => (
-          <div key={entry.name} className="flex items-center justify-between gap-4 mb-1 last:mb-0">
+          <div key={entry.name} className="flex items-center justify-between gap-4 mb-2 last:mb-0">
             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill || entry.stroke }}></div>
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color || entry.fill || entry.stroke }}></div>
                 <span className="font-medium text-slate-600">{entry.name}</span>
             </div>
             <span className="font-bold tabular-nums text-slate-900">{entry.value}</span>
           </div>
         ))}
+        {difference && (
+          <div className="mt-2 pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-slate-500">vs Benchmark</span>
+              <span className={`text-[11px] font-bold tabular-nums ${parseFloat(difference) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                {parseFloat(difference) >= 0 ? '+' : ''}{difference}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -380,13 +430,19 @@ const InsuranceDashboard: React.FC = () => {
                                 </p>
                                 <div className="flex gap-2">
                                     <a 
-                                       href="#/company/invite/demo-token"
+                                       href={`#/company/invite/demo-token?email=${encodeURIComponent(policyData.adminEmail)}&company=${encodeURIComponent(policyData.companyName)}`}
                                        target="_blank"
                                        className="flex-1 bg-white border border-blue-200 rounded-md h-9 flex items-center px-3 text-[11px] font-mono text-slate-600 hover:text-blue-600 transition-colors truncate"
                                     >
-                                        {window.location.origin}/#/company/invite/demo-token
+                                        {window.location.origin}/#/company/invite/demo-token?email={encodeURIComponent(policyData.adminEmail)}&company={encodeURIComponent(policyData.companyName)}
                                     </a>
-                                    <button className="h-9 px-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center" title="Copy Link">
+                                    <button 
+                                        className="h-9 px-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center" 
+                                        title="Copy Link"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(`${window.location.origin}/#/company/invite/demo-token?email=${encodeURIComponent(policyData.adminEmail)}&company=${encodeURIComponent(policyData.companyName)}`);
+                                        }}
+                                    >
                                         <Copy className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -487,8 +543,8 @@ const InsuranceDashboard: React.FC = () => {
          {/* Main Analytics Section */}
          <div className="grid grid-cols-3 gap-6">
             {/* Evolution Chart - Clearer ComposedChart */}
-            <div className="col-span-2 bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
-               <div className="flex items-center justify-between mb-6">
+            <div className="col-span-2 bg-white border border-slate-200 rounded-lg p-6 shadow-sm flex flex-col">
+               <div className="flex items-center justify-between mb-4 shrink-0">
                   <div>
                      <h3 className="text-[13px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-blue-600" /> Portfolio Evolution
@@ -509,28 +565,50 @@ const InsuranceDashboard: React.FC = () => {
                   </div>
                </div>
                
-               <div className="h-72 w-full">
+               {/* Chart container - takes remaining space */}
+               <div className="flex-1 w-full min-h-0">
                   <ResponsiveContainer width="100%" height="100%">
-                     <ComposedChart data={chartData}>
+                     <ComposedChart 
+                        data={chartData}
+                        margin={{ top: 10, right: 10, bottom: 5, left: 5 }}
+                     >
                         <defs>
                            <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.4}/>
+                              <stop offset="50%" stopColor="#2563eb" stopOpacity={0.15}/>
                               <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
                            </linearGradient>
+                           <linearGradient id="colorBenchmark" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
+                              <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 11, fill: '#64748b'}} dy={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fill: '#64748b'}} domain={[40, 100]} />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeWidth={1} />
+                        <XAxis 
+                           dataKey="month" 
+                           axisLine={false} 
+                           tickLine={false} 
+                           tick={{fontSize: 11, fill: '#64748b', fontWeight: 500}} 
+                           dy={10}
+                           interval={0}
+                        />
+                        <YAxis 
+                           axisLine={false} 
+                           tickLine={false} 
+                           tick={{fontSize: 11, fill: '#64748b', fontWeight: 500}} 
+                           domain={['auto', 'auto']}
+                           width={45}
+                        />
                         <Tooltip content={<CustomTooltip />} />
                         
-                        <Line 
+                        <Area 
                            type="monotone" 
                            dataKey="benchmark" 
                            stroke="#94a3b8" 
-                           strokeWidth={2} 
-                           strokeDasharray="4 4" 
-                           dot={false}
-                           name="Market Benchmark" 
+                           strokeWidth={1.5} 
+                           fill="url(#colorBenchmark)"
+                           name="Market Benchmark"
+                           strokeDasharray="4 4"
                         />
 
                         <Area 
@@ -539,7 +617,9 @@ const InsuranceDashboard: React.FC = () => {
                            stroke="#2563eb" 
                            strokeWidth={3} 
                            fill="url(#colorScore)" 
-                           name="Portfolio Avg" 
+                           name="Portfolio Avg"
+                           dot={{ fill: '#2563eb', r: 4, strokeWidth: 2, stroke: '#fff' }}
+                           activeDot={{ r: 6, strokeWidth: 2, stroke: '#fff' }}
                         />
                      </ComposedChart>
                   </ResponsiveContainer>

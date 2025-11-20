@@ -126,8 +126,8 @@ const OnboardingFlow: React.FC = () => {
                  </div>
             </div>
             <div>
-               <span className="font-bold text-sm tracking-tight text-slate-900 block leading-none">RiskGuard HQ</span>
-               <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Telefónica Tech</span>
+               <span className="font-bold text-sm tracking-tight text-slate-900 block leading-none">RiskGuard</span>
+               <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Telefónica</span>
             </div>
          </div>
          <div className="flex items-center gap-8">

@@ -51,8 +51,8 @@ const Landing: React.FC = () => {
                     <div className="w-1.5 h-1.5 bg-transparent"></div><div className="w-1.5 h-1.5 bg-white rounded-full"></div><div className="w-1.5 h-1.5 bg-transparent"></div>
                 </div>
            </div>
-           <h1 className="text-2xl font-bold text-slate-900 mb-2">RiskGuard HQ</h1>
-           <p className="text-[13px] text-slate-500 font-medium uppercase tracking-wider">Powered by Telefónica Tech</p>
+           <h1 className="text-2xl font-bold text-slate-900 mb-2">RiskGuard</h1>
+           <p className="text-[13px] text-slate-500 font-medium uppercase tracking-wider">Powered by Telefónica</p>
         </div>
 
         {/* Workspace Card */}

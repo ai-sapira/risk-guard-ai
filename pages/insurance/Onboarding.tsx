@@ -33,7 +33,15 @@ const pipelineClients = [
     { id: 9, name: 'PdPaola', logo: 'https://logo.clearbit.com/pdpaola.com', stage: 'Live', status: 'Completed', issue: null, time: '2w' },
     { id: 10, name: 'Freepik', logo: 'https://logo.clearbit.com/freepik.com', stage: 'User Sync', status: 'Active', issue: null, time: '1h' },
     { id: 11, name: 'Kave Home', logo: 'https://logo.clearbit.com/kavehome.com', stage: 'Policy Check', status: 'Active', issue: null, time: '5m' },
-    { id: 12, name: 'Jeff', logo: 'https://logo.clearbit.com/wearejeff.com', stage: 'Technical Setup', status: 'Active', issue: null, time: '5h' }
+    { id: 12, name: 'Jeff', logo: 'https://logo.clearbit.com/wearejeff.com', stage: 'Technical Setup', status: 'Active', issue: null, time: '5h' },
+    { id: 13, name: 'Domestika', logo: 'https://logo.clearbit.com/domestika.org', stage: 'Policy Check', status: 'Active', issue: null, time: '15m' },
+    { id: 14, name: 'Spotahome', logo: 'https://logo.clearbit.com/spotahome.com', stage: 'User Sync', status: 'Active', issue: null, time: '3h' },
+    { id: 15, name: 'Letgo', logo: 'https://logo.clearbit.com/letgo.com', stage: 'Technical Setup', status: 'Active', issue: null, time: '6h' },
+    { id: 16, name: 'Jobandtalent', logo: 'https://logo.clearbit.com/jobandtalent.com', stage: 'Live', status: 'Completed', issue: null, time: '3w' },
+    { id: 17, name: 'Adevinta', logo: 'https://logo.clearbit.com/adevinta.com', stage: 'Policy Check', status: 'Pending', issue: null, time: '45m' },
+    { id: 18, name: 'Fever', logo: 'https://logo.clearbit.com/feverup.com', stage: 'User Sync', status: 'Warning', issue: 'LDAP Sync Delayed', time: '1h' },
+    { id: 19, name: 'Glovo', logo: 'https://logo.clearbit.com/glovoapp.com', stage: 'Technical Setup', status: 'Blocked', issue: 'Certificate Expired', time: '4d' },
+    { id: 20, name: 'Amadeus', logo: 'https://logo.clearbit.com/amadeus.com', stage: 'Live', status: 'Completed', issue: null, time: '1mo' }
 ];
 
 const Onboarding: React.FC = () => {

@@ -8,6 +8,7 @@ import Clients from './pages/insurance/Clients';
 import Onboarding from './pages/insurance/Onboarding';
 import Automations from './pages/insurance/Automations';
 import Reports from './pages/insurance/Reports';
+import InsuranceSettings from './pages/insurance/Settings';
 import CompanyDashboard from './pages/company/CompanyDashboard';
 import Campaigns from './pages/company/Campaigns';
 import Employees from './pages/company/Employees';
@@ -39,7 +40,7 @@ const App: React.FC = () => {
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/automations" element={<Automations />} />
                 <Route path="/reports" element={<Reports />} />
-                <Route path="/settings" element={<div className="p-4">Settings Placeholder</div>} />
+                <Route path="/settings" element={<InsuranceSettings />} />
               </Routes>
             </Layout>
           } 
