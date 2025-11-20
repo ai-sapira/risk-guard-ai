@@ -12,6 +12,7 @@ export interface Company {
   employees: number;
   status: 'Active' | 'Onboarding' | 'Inactive';
   trend: 'up' | 'down' | 'stable';
+  logo?: string;
 }
 
 export interface Campaign {

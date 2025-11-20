@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Plus, 
   Search, 
@@ -25,9 +26,13 @@ import {
   AlertTriangle,
   Eye,
   MousePointer,
-  Lock
+  Lock,
+  FileWarning,
+  RefreshCw,
+  CreditCard
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, CartesianGrid } from 'recharts';
+import { Select } from '../../components/ui/Select';
 
 // Expanded Mock Data (12+ Items)
 const initialCampaigns = [
@@ -46,15 +51,39 @@ const initialCampaigns = [
   { id: 13, name: "Office 365 Re-auth", target: "New Hires", status: "Scheduled", type: "Manual", date: "Oct 30", rate: "-", channel: "Email", sent: 0, opened: 0, clicked: 0, compromised: 0 },
 ];
 
-const clickData = [
-   { time: '09:00', clicks: 0 },
-   { time: '10:00', clicks: 12 },
-   { time: '11:00', clicks: 45 },
-   { time: '12:00', clicks: 20 },
-   { time: '13:00', clicks: 8 },
-   { time: '14:00', clicks: 15 },
-   { time: '15:00', clicks: 5 },
-];
+// Helper to generate deterministic details based on campaign ID
+const getCampaignDetails = (campaign: any) => {
+    const seed = campaign.id;
+    
+    // 1. Payload Generator
+    const payloads = [
+        { subject: "Action Required: Password Expiry", sender: "IT Support <support@microsoft-security-update.com>", body: "Your corporate account password is set to expire in 24 hours. To avoid locking your account, please update your credentials immediately." },
+        { subject: "Invoice #INV-2023-001 Overdue", sender: "Billing Dept <accounts@pay-vendor.net>", body: "We have not received payment for the attached invoice. Please review and remit payment to avoid service interruption." },
+        { subject: "Urgent: Wire Transfer Request", sender: "CEO <ceo.executive.office@gmail.com>", body: "Are you at your desk? I need you to process a confidential vendor payment immediately. I am in a meeting, so please handle this via email." },
+        { subject: "New Voice Message (34s)", sender: "Voicemail Service <no-reply@ringcentral-notifications.com>", body: "You have a new voicemail from +1 (555) 019-2834. Click here to listen." },
+        { subject: "Q3 Bonus Allocation", sender: "HR Benefits <benefits@human-resources-portal.org>", body: "Please review your Q3 performance bonus allocation document. You must sign by EOD to be included in this payroll run." },
+    ];
+    const payload = payloads[seed % payloads.length];
+
+    // 2. Timeline Generator
+    const timeline = Array.from({ length: 8 }).map((_, i) => ({
+        time: `${9 + i}:00`,
+        clicks: Math.floor((Math.sin(i + seed) + 1) * 10) + (campaign.clicked > 0 ? 2 : 0)
+    }));
+
+    // 3. Users Generator
+    const userNames = ["Sarah Connor", "John Smith", "Emily Chen", "Michael Wong", "David Miller", "Jessica Day", "Robert Fox", "Lisa Wang"];
+    const depts = ["Finance", "IT", "Sales", "HR", "Marketing", "Legal"];
+    const users = Array.from({ length: Math.min(campaign.compromised + 2, 5) }).map((_, i) => ({
+        id: i,
+        name: userNames[(i + seed) % userNames.length],
+        dept: depts[(i + seed) % depts.length],
+        time: `${9 + i}:3${i}`,
+        status: i < campaign.compromised ? 'Submitted Data' : 'Clicked Link'
+    }));
+
+    return { payload, timeline, users };
+};
 
 const Campaigns: React.FC = () => {
   const [campaigns, setCampaigns] = useState(initialCampaigns);
@@ -66,6 +95,13 @@ const Campaigns: React.FC = () => {
   // Form State
   const [manualForm, setManualForm] = useState({ name: '', target: 'All Employees', channel: 'Email' });
   const [aiObjective, setAiObjective] = useState('General Awareness');
+  const [frequency, setFrequency] = useState('2 Simulations');
+
+  // Derived Data for Detail View
+  const detailData = useMemo(() => {
+      if (!selectedCampaign) return null;
+      return getCampaignDetails(selectedCampaign);
+  }, [selectedCampaign]);
 
   const handleLaunch = () => {
     const newId = campaigns.length + 1;
@@ -107,9 +143,10 @@ const Campaigns: React.FC = () => {
 
   // Renderers
   const renderDetailDrawer = () => {
-     if (!selectedCampaign) return null;
+     if (!selectedCampaign || !detailData) return null;
+     const { payload, timeline, users } = detailData;
 
-     return (
+     return createPortal(
         <div className="fixed inset-0 z-50 flex justify-end">
            <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setSelectedCampaign(null)} />
            <div className="relative w-[600px] bg-white h-full shadow-2xl animate-slide-in-right border-l border-slate-200 flex flex-col overflow-hidden">
@@ -136,9 +173,8 @@ const Campaigns: React.FC = () => {
                     <X className="w-5 h-5" />
                  </button>
               </div>
-
-              <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                 {/* The Funnel */}
+              
+               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                  <div className="space-y-4">
                     <h3 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                        <Filter className="w-3.5 h-3.5 text-blue-600" /> Attack Funnel
@@ -154,7 +190,7 @@ const Campaigns: React.FC = () => {
                           <div className="text-[11px] font-semibold text-blue-600 uppercase mb-1">Opened</div>
                           <div className="text-xl font-bold text-blue-700">{selectedCampaign.opened}</div>
                           <div className="w-full h-1 bg-blue-200 mt-2 rounded-full">
-                             <div className="h-full bg-blue-500 rounded-full" style={{width: '70%'}}></div>
+                             <div className="h-full bg-blue-500 rounded-full" style={{width: `${selectedCampaign.sent > 0 ? (selectedCampaign.opened / selectedCampaign.sent) * 100 : 0}%`}}></div>
                           </div>
                        </div>
                        <div className="bg-amber-50 border border-amber-100 p-3 rounded-md text-center relative">
@@ -162,7 +198,7 @@ const Campaigns: React.FC = () => {
                           <div className="text-[11px] font-semibold text-amber-600 uppercase mb-1">Clicked</div>
                           <div className="text-xl font-bold text-amber-700">{selectedCampaign.clicked}</div>
                           <div className="w-full h-1 bg-amber-200 mt-2 rounded-full">
-                             <div className="h-full bg-amber-500 rounded-full" style={{width: '15%'}}></div>
+                             <div className="h-full bg-amber-500 rounded-full" style={{width: `${selectedCampaign.opened > 0 ? (selectedCampaign.clicked / selectedCampaign.opened) * 100 : 0}%`}}></div>
                           </div>
                        </div>
                        <div className="bg-rose-50 border border-rose-100 p-3 rounded-md text-center relative">
@@ -170,7 +206,7 @@ const Campaigns: React.FC = () => {
                           <div className="text-[11px] font-semibold text-rose-600 uppercase mb-1">Failed</div>
                           <div className="text-xl font-bold text-rose-700">{selectedCampaign.compromised}</div>
                           <div className="w-full h-1 bg-rose-200 mt-2 rounded-full">
-                             <div className="h-full bg-rose-500 rounded-full" style={{width: '5%'}}></div>
+                             <div className="h-full bg-rose-500 rounded-full" style={{width: `${selectedCampaign.clicked > 0 ? (selectedCampaign.compromised / selectedCampaign.clicked) * 100 : 0}%`}}></div>
                           </div>
                        </div>
                     </div>
@@ -194,20 +230,20 @@ const Campaigns: React.FC = () => {
                           <div className="border-b border-slate-100 pb-3 mb-3 space-y-1">
                              <div className="flex text-[12px]">
                                 <span className="text-slate-500 w-16">From:</span>
-                                <span className="text-slate-900 font-medium">IT Support &lt;support@microsoft-security-update.com&gt;</span>
+                                <span className="text-slate-900 font-medium">{payload.sender}</span>
                              </div>
                              <div className="flex text-[12px]">
                                 <span className="text-slate-500 w-16">Subject:</span>
-                                <span className="text-slate-900 font-medium">Action Required: Password Expiry Notification</span>
+                                <span className="text-slate-900 font-medium">{payload.subject}</span>
                              </div>
                           </div>
                           <div className="text-[13px] text-slate-700 leading-relaxed space-y-3 font-serif">
                              <p>Dear User,</p>
-                             <p>Your corporate account password is set to expire in 24 hours. To avoid locking your account, please update your credentials immediately.</p>
+                             <p>{payload.body}</p>
                              <div className="py-2">
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium pointer-events-none">Update Password Now</button>
+                                <button className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium pointer-events-none">View Action</button>
                              </div>
-                             <p className="text-slate-500 text-[11px]">IT Security Team</p>
+                             <p className="text-slate-500 text-[11px]">Security Team</p>
                           </div>
                        </div>
                     </div>
@@ -220,7 +256,7 @@ const Campaigns: React.FC = () => {
                     </h3>
                     <div className="h-48 w-full bg-white border border-slate-200 rounded-lg p-2">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={clickData}>
+                            <AreaChart data={timeline}>
                                 <defs>
                                     <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
@@ -240,26 +276,39 @@ const Campaigns: React.FC = () => {
 
                  <div className="space-y-2">
                      <h3 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider">Compromised Users (Live)</h3>
-                     <div className="border border-slate-200 rounded-md overflow-hidden">
-                         {[1, 2, 3].map(i => (
-                             <div key={i} className="flex justify-between items-center p-3 bg-white border-b border-slate-100 last:border-0">
-                                 <div className="flex items-center gap-3">
-                                     <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-[10px] font-bold">
-                                         JD
-                                     </div>
-                                     <div>
-                                         <p className="text-[13px] font-medium text-slate-900">John Doe</p>
-                                         <p className="text-[11px] text-slate-500">Finance • 10:24 AM</p>
-                                     </div>
-                                 </div>
-                                 <span className="text-[11px] text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100 font-medium">Submitted Data</span>
-                             </div>
-                         ))}
-                     </div>
+                     {users.length > 0 ? (
+                        <div className="border border-slate-200 rounded-md overflow-hidden">
+                            {users.map(user => (
+                                <div key={user.id} className="flex justify-between items-center p-3 bg-white border-b border-slate-100 last:border-0">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-[10px] font-bold">
+                                            {user.name.substring(0,2).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="text-[13px] font-medium text-slate-900">{user.name}</p>
+                                            <p className="text-[11px] text-slate-500">{user.dept} • {user.time}</p>
+                                        </div>
+                                    </div>
+                                    <span className={`text-[11px] px-2 py-0.5 rounded border font-medium ${
+                                        user.status === 'Submitted Data' 
+                                        ? 'text-rose-600 bg-rose-50 border-rose-100' 
+                                        : 'text-amber-600 bg-amber-50 border-amber-100'
+                                    }`}>
+                                        {user.status}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                     ) : (
+                         <div className="p-4 border border-slate-200 rounded-md bg-slate-50 text-center">
+                             <p className="text-[13px] text-slate-500">No compromised users yet. Good job!</p>
+                         </div>
+                     )}
                  </div>
               </div>
            </div>
-        </div>
+        </div>,
+        document.body
      );
   };
 
@@ -404,17 +453,16 @@ const Campaigns: React.FC = () => {
              </h3>
              <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                   <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Max Simulations per User / Month</label>
-                   <select className="w-full h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
-                      <option>1 Simulation</option>
-                      <option selected>2 Simulations</option>
-                      <option>4 Simulations</option>
-                      <option>Unlimited (Aggressive)</option>
-                   </select>
+                   <Select 
+                      label="Max Simulations per User / Month"
+                      value={frequency}
+                      onChange={setFrequency}
+                      options={['1 Simulation', '2 Simulations', '4 Simulations', 'Unlimited (Aggressive)']}
+                   />
                 </div>
                 <div className="space-y-2">
                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Simultaneous Campaigns</label>
-                   <input type="number" value="3" className="w-full h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                   <input type="number" defaultValue="3" className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
                 </div>
              </div>
           </div>
@@ -490,7 +538,7 @@ const Campaigns: React.FC = () => {
   const renderCreationModal = () => {
      if (!isModalOpen) return null;
 
-     return (
+     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
            <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)} />
            
@@ -571,35 +619,30 @@ const Campaigns: React.FC = () => {
                             value={manualForm.name} 
                             onChange={(e) => setManualForm({...manualForm, name: e.target.value})}
                             placeholder="e.g. Finance Dept - Invoice Fraud" 
-                            className="w-full h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                            className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
                            />
                        </div>
                        
                        <div className="grid grid-cols-2 gap-5">
                           <div className="space-y-1.5">
-                             <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Target Group</label>
-                             <select 
+                             <Select
+                                label="Target Group"
                                 value={manualForm.target}
-                                onChange={(e) => setManualForm({...manualForm, target: e.target.value})}
-                                className="w-full h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                             >
-                                <option>All Employees</option>
-                                <option>Finance Team</option>
-                                <option>IT Administrators</option>
-                                <option>Executives</option>
-                             </select>
+                                onChange={(val) => setManualForm({...manualForm, target: val})}
+                                options={['All Employees', 'Finance Team', 'IT Administrators', 'Executives']}
+                             />
                           </div>
                           <div className="space-y-1.5">
-                             <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Attack Vector</label>
-                             <select 
+                             <Select
+                                label="Attack Vector"
                                 value={manualForm.channel}
-                                onChange={(e) => setManualForm({...manualForm, channel: e.target.value})}
-                                className="w-full h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                             >
-                                <option value="Email">Phishing (Email)</option>
-                                <option value="SMS">Smishing (SMS)</option>
-                                <option value="Contextual">Spear Phishing (Contextual)</option>
-                             </select>
+                                onChange={(val) => setManualForm({...manualForm, channel: val})}
+                                options={[
+                                    { label: 'Phishing (Email)', value: 'Email' },
+                                    { label: 'Smishing (SMS)', value: 'SMS' },
+                                    { label: 'Spear Phishing (Contextual)', value: 'Contextual' }
+                                ]}
+                             />
                           </div>
                        </div>
 
@@ -694,7 +737,8 @@ const Campaigns: React.FC = () => {
                  )}
               </div>
            </div>
-        </div>
+        </div>,
+        document.body
      );
   }
 

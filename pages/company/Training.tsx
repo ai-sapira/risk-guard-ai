@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   BookOpen, 
   Play, 
@@ -30,6 +31,7 @@ import {
   List,
   Layout
 } from 'lucide-react';
+import { Select } from '../../components/ui/Select';
 
 // --- Mock Data ---
 
@@ -174,6 +176,9 @@ const Training: React.FC = () => {
   const [selectedPath, setSelectedPath] = useState<any | null>(null);
   const [selectedContent, setSelectedContent] = useState<any | null>(null);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+
+  // Form State
+  const [assignContent, setAssignContent] = useState('Phishing Fundamentals');
 
   // Handlers
   const handleStageClick = (stage: string) => {
@@ -585,7 +590,7 @@ const Training: React.FC = () => {
     if (!selectedStage) return null;
     const users = pipelineUsers[selectedStage as keyof typeof pipelineUsers] || [];
 
-    return (
+    return createPortal(
        <div className="fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setSelectedStage(null)} />
           <div className="relative w-[500px] bg-white h-full shadow-2xl animate-slide-in-right border-l border-slate-200 flex flex-col">
@@ -625,14 +630,15 @@ const Training: React.FC = () => {
                 ))}
              </div>
           </div>
-       </div>
+       </div>,
+       document.body
     );
   };
 
   const renderPathDetailDrawer = () => {
      if (!selectedPath) return null;
 
-     return (
+     return createPortal(
         <div className="fixed inset-0 z-50 flex justify-end">
            <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setSelectedPath(null)} />
            <div className="relative w-[600px] bg-white h-full shadow-2xl animate-slide-in-right border-l border-slate-200 flex flex-col overflow-hidden">
@@ -719,14 +725,15 @@ const Training: React.FC = () => {
                  </div>
               </div>
            </div>
-        </div>
+        </div>,
+        document.body
      );
   };
 
   const renderContentDetailDrawer = () => {
      if (!selectedContent) return null;
 
-     return (
+     return createPortal(
         <div className="fixed inset-0 z-50 flex justify-end">
            <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setSelectedContent(null)} />
            <div className="relative w-[700px] bg-white h-full shadow-2xl animate-slide-in-right border-l border-slate-200 flex flex-col overflow-hidden">
@@ -802,14 +809,15 @@ const Training: React.FC = () => {
                  </div>
               </div>
            </div>
-        </div>
+        </div>,
+        document.body
      );
   };
 
   const renderAssignModal = () => {
      if (!isAssignModalOpen) return null;
 
-     return (
+     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
            <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setIsAssignModalOpen(false)} />
            <div className="relative bg-white rounded-lg shadow-modal w-full max-w-2xl overflow-hidden ring-1 ring-black/5 animate-slide-up flex flex-col max-h-[90vh]">
@@ -826,14 +834,20 @@ const Training: React.FC = () => {
 
               <div className="p-6 space-y-6 overflow-y-auto">
                  <div className="space-y-2">
-                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Select Content</label>
-                    <select className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                       <option>Phishing Fundamentals</option>
-                       <option>Password Hygiene</option>
-                       <option>GDPR Data Handling</option>
-                    </select>
+                    <Select
+                        label="Select Content"
+                        value={assignContent}
+                        onChange={setAssignContent}
+                        options={['Phishing Fundamentals', 'Password Hygiene', 'GDPR Data Handling', 'CEO Fraud Defense', 'Secure Remote Work']}
+                    />
                  </div>
                  {/* ... rest of form ... */}
+                 <div className="space-y-2">
+                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Assign To</label>
+                    <div className="p-3 border border-slate-200 rounded-md bg-slate-50 text-[13px] text-slate-500 italic">
+                        Select Departments or Groups... (Mock)
+                    </div>
+                 </div>
               </div>
 
               <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 shrink-0">
@@ -841,7 +855,8 @@ const Training: React.FC = () => {
                  <button onClick={handleAssign} className="px-4 py-2 bg-blue-600 text-white rounded-md text-[13px] font-medium hover:bg-blue-700 shadow-sm transition-all">Assign Content</button>
               </div>
            </div>
-        </div>
+        </div>,
+        document.body
      );
   };
 

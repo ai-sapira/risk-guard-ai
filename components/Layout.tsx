@@ -9,14 +9,13 @@ import {
   Settings,
   Search,
   Bell,
-  Command,
   ChevronDown,
   Plus,
-  CheckCircle2,
   LogOut,
-  PanelLeft,
   Target,
-  ChevronRight
+  ChevronRight,
+  GitBranch,
+  UserPlus
 } from 'lucide-react';
 import { Role } from '../types';
 
@@ -52,7 +51,9 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
       case Role.INSURANCE_ADMIN:
         return [
           { icon: LayoutGrid, label: 'Overview', path: '/insurance' },
-          { icon: Building2, label: 'Companies', path: '/insurance/clients' },
+          { icon: Building2, label: 'Portfolio', path: '/insurance/clients' },
+          { icon: UserPlus, label: 'Onboarding', path: '/insurance/onboarding' },
+          { icon: GitBranch, label: 'Automations', path: '/insurance/automations' },
           { icon: FileText, label: 'Reports', path: '/insurance/reports' },
           { icon: Settings, label: 'Settings', path: '/insurance/settings' },
         ];
@@ -83,15 +84,23 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
       <aside className="w-60 bg-slate-50 border-r border-slate-200 flex flex-col shrink-0 z-30 relative">
         {/* Workspace Switcher */}
         <div 
-          className="h-12 flex items-center px-4 border-b border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer group relative select-none"
+          className="h-14 flex items-center px-4 border-b border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer group relative select-none"
           onClick={() => setIsWorkspaceMenuOpen(!isWorkspaceMenuOpen)}
         >
           <div className="flex items-center gap-3 w-full">
-             <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition-colors">
-                <div className="font-bold text-[11px] tracking-tight">R</div>
+             {/* Telefónica 'T' Dot Logo */}
+             <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center shadow-sm group-hover:bg-blue-700 transition-colors">
+                 <div className="grid grid-cols-3 gap-0.5">
+                     <div className="w-1 h-1 bg-white rounded-full"></div><div className="w-1 h-1 bg-white rounded-full"></div><div className="w-1 h-1 bg-white rounded-full"></div>
+                     <div className="w-1 h-1 bg-transparent"></div><div className="w-1 h-1 bg-white rounded-full"></div><div className="w-1 h-1 bg-transparent"></div>
+                     <div className="w-1 h-1 bg-transparent"></div><div className="w-1 h-1 bg-white rounded-full"></div><div className="w-1 h-1 bg-transparent"></div>
+                 </div>
              </div>
              <div className="flex flex-1 items-center justify-between min-w-0">
-                <span className="text-[13px] font-semibold text-slate-900 truncate tracking-tight">RiskGuard HQ</span>
+                <div className="flex flex-col">
+                    <span className="text-[13px] font-bold text-slate-900 truncate tracking-tight leading-none">RiskGuard HQ</span>
+                    <span className="text-[9px] text-slate-500 font-medium mt-0.5">by Telefónica Tech</span>
+                </div>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
              </div>
           </div>
@@ -99,7 +108,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
 
         {/* Workspace Menu Dropdown */}
         {isWorkspaceMenuOpen && (
-          <div ref={menuRef} className="absolute top-14 left-2 w-56 bg-white border border-slate-200 rounded-lg shadow-modal z-50 py-1 animate-enter origin-top-left">
+          <div ref={menuRef} className="absolute top-16 left-2 w-56 bg-white border border-slate-200 rounded-lg shadow-modal z-50 py-1 animate-enter origin-top-left">
             <div className="px-3 py-2 border-b border-slate-100">
               <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Current Workspace</p>
               <p className="text-[13px] font-medium text-slate-900 mt-0.5">RiskGuard HQ</p>
@@ -177,16 +186,31 @@ const Layout: React.FC<LayoutProps> = ({ children, role }) => {
           </div>
         </div>
 
-        {/* User Profile - Bottom */}
-        <div className="p-3 border-t border-slate-200">
-           <button className="w-full flex items-center gap-3 p-1.5 rounded-md hover:bg-slate-100 transition-colors text-left">
-              <div className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
-                 JD
-              </div>
-              <div className="flex-1 min-w-0">
-                 <p className="text-[13px] font-medium text-slate-900 truncate">Jane Doe</p>
-              </div>
-           </button>
+        {/* Footer Branding & Profile */}
+        <div className="mt-auto border-t border-slate-200">
+             {/* Telefónica Badge */}
+            <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-100">
+                 <div className="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
+                    <div className="w-3 h-3 grid grid-cols-3 gap-0.5">
+                        <div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div><div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div><div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div>
+                        <div className="w-0.5 h-0.5 bg-transparent"></div><div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div><div className="w-0.5 h-0.5 bg-transparent"></div>
+                        <div className="w-0.5 h-0.5 bg-transparent"></div><div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div><div className="w-0.5 h-0.5 bg-transparent"></div>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Telefónica Tech</span>
+                 </div>
+            </div>
+
+            {/* User Profile */}
+            <div className="p-3">
+               <button className="w-full flex items-center gap-3 p-1.5 rounded-md hover:bg-slate-100 transition-colors text-left">
+                  <div className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
+                     JD
+                  </div>
+                  <div className="flex-1 min-w-0">
+                     <p className="text-[13px] font-medium text-slate-900 truncate">Jane Doe</p>
+                  </div>
+               </button>
+            </div>
         </div>
       </aside>
 

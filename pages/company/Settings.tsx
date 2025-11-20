@@ -13,9 +13,18 @@ import {
   Users,
   Lock
 } from 'lucide-react';
+import { Select } from '../../components/ui/Select';
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'general' | 'integrations' | 'privacy' | 'notifications'>('general');
+  
+  // State for settings to allow controlled Select components
+  const [settings, setSettings] = useState({
+     sector: 'Technology',
+     language: 'English (US)',
+     timezone: 'UTC-05:00 Eastern Time',
+     retention: '12 Months'
+  });
 
   const renderGeneral = () => (
     <div className="space-y-6 animate-enter">
@@ -24,14 +33,13 @@ const Settings: React.FC = () => {
              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Company Name</label>
              <input type="text" defaultValue="Acme Corp" className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
           </div>
-          <div className="space-y-2">
-             <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Industry Sector</label>
-             <select className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                <option>Finance</option>
-                <option>Technology</option>
-                <option>Healthcare</option>
-                <option>Manufacturing</option>
-             </select>
+          <div>
+             <Select 
+                label="Industry Sector"
+                value={settings.sector}
+                onChange={(val) => setSettings({...settings, sector: val})}
+                options={['Finance', 'Technology', 'Healthcare', 'Manufacturing', 'Retail']}
+             />
           </div>
        </div>
 
@@ -48,21 +56,21 @@ const Settings: React.FC = () => {
        <div className="pt-6 border-t border-slate-100">
           <h3 className="text-[13px] font-bold text-slate-900 mb-4">Localization</h3>
           <div className="grid grid-cols-2 gap-6">
-             <div className="space-y-2">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Default Language</label>
-                <select className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium text-slate-900">
-                   <option>English (US)</option>
-                   <option>Spanish (ES)</option>
-                   <option>French (FR)</option>
-                </select>
+             <div>
+                <Select
+                    label="Default Language"
+                    value={settings.language}
+                    onChange={(val) => setSettings({...settings, language: val})}
+                    options={['English (US)', 'Spanish (ES)', 'French (FR)']}
+                />
              </div>
-             <div className="space-y-2">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Timezone</label>
-                <select className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium text-slate-900">
-                   <option>UTC-05:00 Eastern Time</option>
-                   <option>UTC+00:00 London</option>
-                   <option>UTC+01:00 Paris</option>
-                </select>
+             <div>
+                <Select
+                    label="Timezone"
+                    value={settings.timezone}
+                    onChange={(val) => setSettings({...settings, timezone: val})}
+                    options={['UTC-05:00 Eastern Time', 'UTC+00:00 London', 'UTC+01:00 Paris']}
+                />
              </div>
           </div>
        </div>
@@ -149,11 +157,13 @@ const Settings: React.FC = () => {
                 <h4 className="text-[13px] font-bold text-slate-900">Data Retention Period</h4>
                 <p className="text-[12px] text-slate-500 mt-0.5">Automatically delete simulation data after X months.</p>
              </div>
-             <select className="h-8 px-2 bg-slate-50 border border-slate-200 rounded text-[12px] font-medium">
-                <option>12 Months</option>
-                <option>24 Months</option>
-                <option>Indefinite</option>
-             </select>
+             <div className="w-48">
+                <Select
+                    value={settings.retention}
+                    onChange={(val) => setSettings({...settings, retention: val})}
+                    options={['12 Months', '24 Months', 'Indefinite']}
+                />
+             </div>
           </div>
        </div>
 

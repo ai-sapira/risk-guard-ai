@@ -1,19 +1,21 @@
+
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Search, 
   Filter, 
-  MoreHorizontal,
-  Download,
-  Upload,
-  User,
-  Shield,
-  AlertTriangle,
-  CheckCircle2,
-  X,
-  TrendingUp,
-  Mail,
-  Building,
-  CreditCard,
+  MoreHorizontal, 
+  Download, 
+  Upload, 
+  User, 
+  Shield, 
+  AlertTriangle, 
+  CheckCircle2, 
+  X, 
+  TrendingUp, 
+  Mail, 
+  Building, 
+  CreditCard, 
   Database
 } from 'lucide-react';
 
@@ -189,7 +191,7 @@ const Employees: React.FC = () => {
       </div>
 
       {/* Slide-Over Detail Drawer */}
-      {selectedEmployee && (
+      {selectedEmployee && createPortal(
         <div className="fixed inset-0 z-50 flex justify-end">
             <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setSelectedEmployee(null)} />
             <div className="relative w-[400px] bg-white h-full shadow-2xl animate-slide-in-right border-l border-slate-200 flex flex-col">
@@ -276,7 +278,8 @@ const Employees: React.FC = () => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
