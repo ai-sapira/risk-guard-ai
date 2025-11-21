@@ -18,7 +18,8 @@ import {
   MoreHorizontal,
   AlertTriangle,
   Clock,
-  Plus
+  Plus,
+  Mail
 } from 'lucide-react';
 
 const pipelineClients = [
@@ -48,6 +49,11 @@ const Onboarding: React.FC = () => {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [formData, setFormData] = useState({
+    policyId: '',
+    companyName: '',
+    adminEmail: ''
+  });
 
   const handleProvision = () => {
     setIsProcessing(true);
@@ -57,11 +63,21 @@ const Onboarding: React.FC = () => {
     }, 2000);
   };
 
+  const resetWizard = () => {
+    setIsWizardOpen(false);
+    setStep(1);
+    setFormData({
+      policyId: '',
+      companyName: '',
+      adminEmail: ''
+    });
+  };
+
   const renderWizardModal = () => {
     if (!isWizardOpen) return null;
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setIsWizardOpen(false)} />
+           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={resetWizard} />
            <div className="relative bg-white rounded-lg shadow-modal w-full max-w-3xl overflow-hidden ring-1 ring-black/5 animate-slide-up flex flex-col max-h-[90vh]">
               {/* Modal Header */}
               <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
@@ -69,7 +85,7 @@ const Onboarding: React.FC = () => {
                     <h3 className="text-[15px] font-semibold text-slate-900">New Client Provisioning</h3>
                     <p className="text-[12px] text-slate-500 mt-0.5">Add a new tenant linked to an insurance policy</p>
                  </div>
-                 <button onClick={() => setIsWizardOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                 <button onClick={resetWizard} className="text-slate-400 hover:text-slate-600 transition-colors">
                     <X className="w-4 h-4" />
                  </button>
               </div>
@@ -95,15 +111,43 @@ const Onboarding: React.FC = () => {
                                   <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Policy ID / Contract #</label>
                                   <div className="relative">
                                     <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <input type="text" placeholder="POL-2023-XXXX" className="w-full h-10 pl-10 pr-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                                    <input 
+                                      type="text" 
+                                      placeholder="POL-2023-XXXX" 
+                                      value={formData.policyId}
+                                      onChange={(e) => setFormData({...formData, policyId: e.target.value})}
+                                      className="w-full h-10 pl-10 pr-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                                    />
                                   </div>
                               </div>
                               <div className="space-y-2">
                                   <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Company Legal Name</label>
                                   <div className="relative">
                                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <input type="text" placeholder="Acme Corp Ltd." className="w-full h-10 pl-10 pr-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                                    <input 
+                                      type="text" 
+                                      placeholder="Acme Corp Ltd." 
+                                      value={formData.companyName}
+                                      onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                                      className="w-full h-10 pl-10 pr-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                                    />
                                   </div>
+                              </div>
+                              <div className="space-y-2">
+                                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                      Primary Contact (CISO/Admin) <span className="text-rose-500">*</span>
+                                  </label>
+                                  <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input 
+                                      type="email" 
+                                      placeholder="admin@company.com" 
+                                      value={formData.adminEmail}
+                                      onChange={(e) => setFormData({...formData, adminEmail: e.target.value})}
+                                      className="w-full h-10 pl-10 pr-3 bg-white border border-slate-200 rounded-md text-[13px] font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                                    />
+                                  </div>
+                                  <p className="text-[11px] text-slate-400">An invitation to set up the platform will be sent here.</p>
                               </div>
                               <div className="flex items-center gap-2 p-3 bg-amber-50 text-amber-800 rounded border border-amber-100 text-[12px]">
                                 <AlertTriangle className="w-4 h-4 shrink-0" />
@@ -111,7 +155,11 @@ const Onboarding: React.FC = () => {
                               </div>
                           </div>
                           <div className="mt-8 flex justify-end">
-                              <button onClick={() => setStep(2)} className="bg-blue-600 text-white px-4 py-2 rounded-md text-[13px] font-bold hover:bg-blue-700 flex items-center gap-2">
+                              <button 
+                                onClick={() => setStep(2)} 
+                                disabled={!formData.policyId || !formData.companyName || !formData.adminEmail}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-md text-[13px] font-bold hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
                                   Verify & Continue <ArrowRight className="w-3.5 h-3.5" />
                               </button>
                           </div>
@@ -164,11 +212,15 @@ const Onboarding: React.FC = () => {
                               <h4 className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Summary</h4>
                               <div className="flex justify-between text-[13px] mb-3">
                                   <span className="text-slate-500">Client Name</span>
-                                  <span className="font-bold text-slate-900">Acme Corp Ltd.</span>
+                                  <span className="font-bold text-slate-900">{formData.companyName || 'Acme Corp Ltd.'}</span>
                               </div>
                               <div className="flex justify-between text-[13px] mb-3">
                                   <span className="text-slate-500">Policy ID</span>
-                                  <span className="font-mono text-slate-900">POL-2023-9921</span>
+                                  <span className="font-mono text-slate-900">{formData.policyId || 'POL-2023-9921'}</span>
+                              </div>
+                              <div className="flex justify-between text-[13px] mb-3">
+                                  <span className="text-slate-500">Primary Contact</span>
+                                  <span className="font-medium text-slate-700">{formData.adminEmail || 'N/A'}</span>
                               </div>
                               <div className="flex justify-between text-[13px]">
                                   <span className="text-slate-500">Blueprint</span>
@@ -192,8 +244,14 @@ const Onboarding: React.FC = () => {
                               <Check className="w-8 h-8" />
                           </div>
                           <h2 className="text-xl font-bold text-slate-900 mb-2">Tenant Live</h2>
-                          <p className="text-sm text-slate-500 mb-8">Invitation email sent to admin. Dashboard access is now active.</p>
-                          <button onClick={() => { setIsWizardOpen(false); setStep(1); }} className="text-blue-600 text-[13px] font-bold hover:underline">
+                          <p className="text-sm text-slate-500 mb-8">
+                            {formData.adminEmail ? (
+                              <>Invitation email sent to <strong>{formData.adminEmail}</strong>. Dashboard access is now active.</>
+                            ) : (
+                              <>Invitation email sent to admin. Dashboard access is now active.</>
+                            )}
+                          </p>
+                          <button onClick={resetWizard} className="text-blue-600 text-[13px] font-bold hover:underline">
                               Close Window
                           </button>
                       </div>
